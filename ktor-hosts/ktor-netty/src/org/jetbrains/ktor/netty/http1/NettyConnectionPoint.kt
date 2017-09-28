@@ -1,4 +1,4 @@
-package org.jetbrains.ktor.netty
+package org.jetbrains.ktor.netty.http1
 
 import io.netty.channel.*
 import io.netty.handler.codec.http.*
