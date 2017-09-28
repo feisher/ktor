@@ -22,7 +22,7 @@ class TestHostMultipartTest {
         testMultiParts({
             assertNotNull(it, "it should be multipart data")
             if (it != null) {
-                assertEquals(emptyList<PartData>(), it.parts.toList())
+                assertEquals(emptyList<PartData>(), it.readAllParts())
             }
         }, setup = {
             addHeader(HttpHeaders.ContentType, ContentType.MultiPart.FormData.toString())
@@ -34,7 +34,7 @@ class TestHostMultipartTest {
         testMultiParts({
             assertNotNull(it, "it should be multipart data")
             if (it != null) {
-                val parts = it.parts.toList()
+                val parts = it.readAllParts()
 
                 assertEquals(1, parts.size)
                 assertEquals("field1", parts[0].partName)
@@ -60,7 +60,7 @@ class TestHostMultipartTest {
         testMultiParts({
             assertNotNull(it, "it should be multipart data")
             if (it != null) {
-                val parts = it.parts.toList()
+                val parts = it.readAllParts()
 
                 assertEquals(1, parts.size)
                 val file = parts[0] as PartData.FileItem
@@ -95,7 +95,7 @@ class TestHostMultipartTest {
         withTestApplication {
             application.intercept(ApplicationCallPipeline.Call) {
                 try {
-                    call.receiveMultipart().parts.toList()
+                    call.receiveMultipart().readAllParts()
                 } catch (error: Throwable) {
                     fail("This pipeline shouldn't finish successfully")
                 }
@@ -107,7 +107,7 @@ class TestHostMultipartTest {
         }
     }
 
-    fun testMultiParts(asserts: (MultiPartData?) -> Unit, setup: TestApplicationRequest.() -> Unit) {
+    fun testMultiParts(asserts: suspend (MultiPartData?) -> Unit, setup: TestApplicationRequest.() -> Unit) {
         withTestApplication {
             application.intercept(ApplicationCallPipeline.Call) {
                 if (call.request.isMultipart()) {
